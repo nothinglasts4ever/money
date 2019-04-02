@@ -7,24 +7,29 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PersonService {
 
-    private static Map<Long, Person> personMap = new ConcurrentHashMap<>();
+    private static Map<Long, Person> personMap;
 
-    public  Map<Long, Person> findAll() {
+    public PersonService() {
+        personMap = new ConcurrentHashMap<>();
+    }
+
+    public Map<Long, Person> findAll() {
         return personMap;
     }
 
-    public  Person findById(long id) {
+    public Person findById(long id) {
         if (personMap.containsKey(id)) {
             return personMap.get(id);
         }
         return new Person();
     }
 
-    public  Person create(Person person) {
+    public Person create(Person person) {
         long id = System.currentTimeMillis();
         System.out.println("Person with [" + id + "] created");
         person.setId(id);
-        return personMap.putIfAbsent(id, person);
+        personMap.putIfAbsent(id, person);
+        return personMap.get(id);
     }
 
 }

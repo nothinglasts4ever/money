@@ -12,24 +12,29 @@ import java.util.Map;
 
 public class PersonController {
 
-    @Inject
-    PersonService personService;
+    private final PersonService personService;
 
-    public Object getAll(Request request, Response response) {
+    @Inject
+    public PersonController(PersonService personService) {
+        this.personService = personService;
+    }
+
+    public String getAll(Request request, Response response) {
         response.type(Constants.JSON);
         Map<Long, Person> all = personService.findAll();
         return new Gson().toJson(all);
     }
 
-    public Object get(Request request, Response response) {
+    public String get(Request request, Response response) {
         response.type(Constants.JSON);
         String id = request.params(":id");
         Person person = personService.findById(Long.parseLong(id));
         return new Gson().toJson(person);
     }
 
-    public Object post(Request request, Response response) {
+    public String post(Request request, Response response) {
         response.type(Constants.JSON);
+        response.status(201);
         Person person = new Gson().fromJson(request.body(), Person.class);
         return new Gson().toJson(personService.create(person));
     }
