@@ -1,35 +1,35 @@
 package com.github.nl4.money.service;
 
-import com.github.nl4.money.domain.Person;
+import com.github.nl4.money.api.PersonDTO;
+import com.github.nl4.money.domain.tables.Person;
+import com.google.inject.Inject;
+import org.jooq.DSLContext;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 public class PersonService {
 
-    private static Map<Long, Person> personMap;
+    @Inject
+    DSLContext dsl;
 
-    public PersonService() {
-        personMap = new ConcurrentHashMap<>();
+    public List<PersonDTO> findAll() {
+        return dsl.select()
+                .from(Person.PERSON)
+                .fetchInto(PersonDTO.class);
     }
 
-    public Map<Long, Person> findAll() {
-        return personMap;
+    public PersonDTO findById(Integer id) {
+        return dsl.select()
+                .from(Person.PERSON)
+                .where(Person.PERSON.ID.eq(id))
+                .fetchOneInto(PersonDTO.class);
     }
 
-    public Person findById(long id) {
-        if (personMap.containsKey(id)) {
-            return personMap.get(id);
-        }
-        return new Person();
-    }
-
-    public Person create(Person person) {
-        long id = System.currentTimeMillis();
-        System.out.println("Person with [" + id + "] created");
-        person.setId(id);
-        personMap.putIfAbsent(id, person);
-        return personMap.get(id);
+    public PersonDTO create(PersonDTO person) {
+        return dsl.insertInto(Person.PERSON, Person.PERSON.FIRST_NAME, Person.PERSON.LAST_NAME)
+                .values(person.getFirstName(), person.getLastName())
+                .returning()
+                .fetchOne().into(PersonDTO.class);
     }
 
 }

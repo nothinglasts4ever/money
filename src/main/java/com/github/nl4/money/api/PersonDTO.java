@@ -1,20 +1,16 @@
-package com.github.nl4.money.domain;
+package com.github.nl4.money.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Person {
-    private long id;
+public class PersonDTO {
+    private Integer id;
     private String firstName;
     private String lastName;
-    private Gender gender;
-    private LocalDate birthDay;
 }
