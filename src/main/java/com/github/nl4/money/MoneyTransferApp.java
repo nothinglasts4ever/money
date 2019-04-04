@@ -10,8 +10,10 @@ public class MoneyTransferApp {
 
     public MoneyTransferApp() {
         Injector injector = Guice.createInjector(new GuiceModule());
-        PersonController personController = injector.getInstance(PersonController.class);
+        DatabaseDataLoader databaseDataLoader = injector.getInstance(DatabaseDataLoader.class);
+        databaseDataLoader.createSchema();
 
+        PersonController personController = injector.getInstance(PersonController.class);
         Spark.get("/persons", personController::getAll);
         Spark.get("/persons/:id", personController::get);
         Spark.post("/persons", Constants.JSON, personController::post);

@@ -29,13 +29,21 @@ public class PersonController {
         response.type(Constants.JSON);
         String id = request.params(":id");
         PersonDTO person = personService.findById(Integer.parseInt(id));
+        if (person == null) {
+            response.status(404);
+            return new Gson().toJson("Person with id [" + id + "] not found");
+        }
         return new Gson().toJson(person);
     }
 
     public String post(Request request, Response response) {
         response.type(Constants.JSON);
-        response.status(201);
         PersonDTO person = new Gson().fromJson(request.body(), PersonDTO.class);
+        if (person.getFirstName() == null || person.getLastName() == null) {
+            response.status(400);
+            return new Gson().toJson("Person has invalid first name and/or last name");
+        }
+        response.status(201);
         return new Gson().toJson(personService.create(person));
     }
 
