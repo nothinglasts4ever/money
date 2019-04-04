@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS person;
+DROP TABLE IF EXISTS account;
 
-CREATE TABLE person
-(
-    id         INT         NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(50),
-    last_name  VARCHAR(50) NOT NULL
+CREATE TABLE account (
+    id        INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_name VARCHAR(50),
+    active    BOOLEAN,
+    balance   DECIMAL(20, 2)
 );
