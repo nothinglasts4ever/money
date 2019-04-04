@@ -8,6 +8,8 @@ import spark.Spark;
 
 public class MoneyTransferApp {
 
+    public static final String JSON = "application/json";
+
     public MoneyTransferApp() {
         Injector injector = Guice.createInjector(new GuiceModule());
         DatabaseDataLoader databaseDataLoader = injector.getInstance(DatabaseDataLoader.class);
@@ -16,7 +18,7 @@ public class MoneyTransferApp {
         PersonController personController = injector.getInstance(PersonController.class);
         Spark.get("/persons", personController::getAll);
         Spark.get("/persons/:id", personController::get);
-        Spark.post("/persons", Constants.JSON, personController::post);
+        Spark.post("/persons", JSON, personController::post);
     }
 
     public static void main(String[] args) {

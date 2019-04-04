@@ -1,12 +1,20 @@
 package com.github.nl4.money;
 
+import com.github.nl4.money.config.Properties;
+import com.google.inject.Inject;
 import org.flywaydb.core.Flyway;
 
 public class DatabaseDataLoader {
 
+    @Inject
+    Properties properties;
+
     public void createSchema() {
-        Flyway flyway  = Flyway.configure()
-                .dataSource("jdbc:h2:mem:default;DB_CLOSE_DELAY=-1", "sa", "")
+        String dbUrl = properties.getDbUrl();
+        String dbUser = properties.getDbUser();
+        String dbPassword = properties.getDbPassword();
+        Flyway flyway = Flyway.configure()
+                .dataSource(dbUrl, dbUser, dbPassword)
                 .load();
         flyway.migrate();
     }

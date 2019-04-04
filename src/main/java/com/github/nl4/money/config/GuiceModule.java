@@ -4,6 +4,7 @@ import com.github.nl4.money.controller.PersonController;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import net.jmob.guice.conf.core.ConfigurationModule;
 import org.h2.jdbcx.JdbcDataSource;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -15,6 +16,8 @@ public class GuiceModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        install(new ConfigurationModule());
+        requestInjection(Properties.class);
         bind(PersonController.class).in(Singleton.class);
     }
 
