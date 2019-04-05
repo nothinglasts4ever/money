@@ -9,9 +9,9 @@ import spark.Spark;
 
 public class MoneyTransferApp {
 
-    public static final String JSON = "application/json";
+    private static final String JSON = "application/json";
 
-    public MoneyTransferApp() {
+    private MoneyTransferApp() {
         var injector = Guice.createInjector(new GuiceModule());
         loadData(injector);
         createEndpoints(injector);

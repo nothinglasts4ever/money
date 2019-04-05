@@ -7,6 +7,8 @@ import com.google.inject.Inject;
 import spark.Request;
 import spark.Response;
 
+import java.math.BigDecimal;
+
 public class AccountController {
 
     private static final String JSON = "application/json";
@@ -28,11 +30,15 @@ public class AccountController {
         var userName = account.getUserName();
         if (userName == null) {
             response.status(400);
-            return new Gson().toJson("Account should have user name ");
+            return new Gson().toJson("Account should have user name");
+        }
+        if (account.getBalance() != null && account.getBalance().compareTo(BigDecimal.ZERO) < 0) {
+            response.status(400);
+            return new Gson().toJson("Account cannot have negative balance");
         }
         accountService.create(account);
         response.status(201);
-        return new Gson().toJson("Account for " + userName + " was created");
+        return new Gson().toJson("Account creation request for user [" + userName + "] accepted for processing");
     }
 
     /**
@@ -44,7 +50,7 @@ public class AccountController {
         var account = accountService.findById(Integer.parseInt(id));
         if (account == null) {
             response.status(404);
-            return new Gson().toJson("Account with id [" + id + "] not found");
+            return new Gson().toJson("Account [" + id + "] not found");
         }
         return new Gson().toJson(account);
     }
@@ -66,7 +72,7 @@ public class AccountController {
         var id = request.params(":id");
         accountService.activate(Integer.parseInt(id));
         response.status(200);
-        return new Gson().toJson("Account [" + id + "] was activated");
+        return new Gson().toJson("Account activation request for [" + id + "] accepted for processing");
     }
 
     /**
@@ -77,7 +83,7 @@ public class AccountController {
         var id = request.params(":id");
         accountService.deactivate(Integer.parseInt(id));
         response.status(200);
-        return new Gson().toJson("Account [" + id + "] was deactivated");
+        return new Gson().toJson("Account activation request for [" + id + "] accepted for processing");
     }
 
 }

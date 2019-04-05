@@ -20,8 +20,8 @@ public class AccountService {
     }
 
     public void create(Account account) {
-        boolean active = account.getActive() != null ? account.getActive() : false;
-        BigDecimal balance = account.getBalance() != null ? account.getBalance() : BigDecimal.ZERO;
+        var active = account.getActive() != null ? account.getActive() : false;
+        var balance = account.getBalance() != null ? account.getBalance() : BigDecimal.ZERO;
         dsl.transaction(ctx ->
                 DSL.using(ctx)
                         .insertInto(ACCOUNT, ACCOUNT.USER_NAME, ACCOUNT.ACTIVE, ACCOUNT.BALANCE)
