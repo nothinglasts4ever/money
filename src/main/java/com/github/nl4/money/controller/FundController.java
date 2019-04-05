@@ -23,41 +23,45 @@ public class FundController {
 
     public String deposit(Request request, Response response) {
         response.type(JSON);
-        String id = request.params(":id");
-        BalanceUpdateRequest balanceUpdateRequest = new Gson().fromJson(request.body(), BalanceUpdateRequest.class);
+        var id = request.params(":id");
+        var balanceUpdateRequest = new Gson().fromJson(request.body(), BalanceUpdateRequest.class);
         if (balanceUpdateRequest == null || balanceUpdateRequest.getAmount() == null) {
             response.status(400);
             return new Gson().toJson("Balance update request does not contain amount information");
         }
+        fundService.deposit(Integer.parseInt(id), balanceUpdateRequest.getAmount());
         response.status(200);
-        return new Gson().toJson(fundService.deposit(id, balanceUpdateRequest.getAmount()));
+        return new Gson().toJson("Balance for account [" + id + "] was updated");
     }
 
     public String withdraw(Request request, Response response) {
         response.type(JSON);
-        String id = request.params(":id");
-        BalanceUpdateRequest balanceUpdateRequest = new Gson().fromJson(request.body(), BalanceUpdateRequest.class);
+        var id = request.params(":id");
+        var balanceUpdateRequest = new Gson().fromJson(request.body(), BalanceUpdateRequest.class);
         if (balanceUpdateRequest == null || balanceUpdateRequest.getAmount() == null) {
             response.status(400);
             return new Gson().toJson("Balance update request does not contain amount information");
         }
+        fundService.withdraw(Integer.parseInt(id), balanceUpdateRequest.getAmount());
         response.status(200);
-        return new Gson().toJson(fundService.withdraw(id, balanceUpdateRequest.getAmount()));
+        return new Gson().toJson("Balance for account [" + id + "] was updated");
     }
 
     public String transfer(Request request, Response response) {
         response.type(JSON);
-        TransferRequest transferRequest = new Gson().fromJson(request.body(), TransferRequest.class);
+        var transferRequest = new Gson().fromJson(request.body(), TransferRequest.class);
         if (transferRequest == null || transferRequest.getAccountFromId() == null || transferRequest.getAccountToId() == null || transferRequest.getAmount() == null) {
             response.status(400);
             return new Gson().toJson("Transfer request does not contain required information");
         }
-        if (Objects.equals(transferRequest.getAccountFromId(), transferRequest.getAccountToId())) {
+        var accountFromId = transferRequest.getAccountFromId();
+        var accountToId = transferRequest.getAccountToId();
+        if (Objects.equals(accountFromId, accountToId)) {
             response.status(400);
             return new Gson().toJson("Fund cannot be transferred to originator");
         }
         response.status(201);
-        return new Gson().toJson(fundService.transfer(transferRequest.getAccountFromId(), transferRequest.getAccountToId(), transferRequest.getAmount()));
+        return new Gson().toJson(fundService.transfer(accountFromId, accountToId, transferRequest.getAmount()));
     }
 
 }

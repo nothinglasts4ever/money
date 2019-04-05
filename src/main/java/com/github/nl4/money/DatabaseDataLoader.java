@@ -10,10 +10,10 @@ public class DatabaseDataLoader {
     Properties properties;
 
     public void createSchema() {
-        String dbUrl = properties.getDbUrl();
-        String dbUser = properties.getDbUser();
-        String dbPassword = properties.getDbPassword();
-        Flyway flyway = Flyway.configure()
+        var dbUrl = properties.getDbUrl();
+        var dbUser = properties.getDbUser();
+        var dbPassword = properties.getDbPassword();
+        var flyway = Flyway.configure()
                 .dataSource(dbUrl, dbUser, dbPassword)
                 .load();
         flyway.migrate();

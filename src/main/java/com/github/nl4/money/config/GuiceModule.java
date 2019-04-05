@@ -12,6 +12,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.DefaultDSLContext;
+import org.jooq.impl.DefaultTransactionProvider;
 
 public class GuiceModule extends AbstractModule {
 
@@ -25,18 +26,15 @@ public class GuiceModule extends AbstractModule {
 
     @Provides
     @Singleton
-    public DataSourceConnectionProvider connectionProvider() {
-        JdbcDataSource dataSource = new JdbcDataSource();
+    public DSLContext dsl() {
+        var dataSource = new JdbcDataSource();
         dataSource.setUrl("jdbc:h2:mem:default;DB_CLOSE_DELAY=-1");
         dataSource.setUser("sa");
-        return new DataSourceConnectionProvider(dataSource);
-    }
+        var connectionProvider = new DataSourceConnectionProvider(dataSource);
 
-    @Provides
-    @Singleton
-    public DSLContext dsl() {
-        DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
-        jooqConfiguration.set(connectionProvider());
+        var jooqConfiguration = new DefaultConfiguration();
+        jooqConfiguration.set(connectionProvider);
+        jooqConfiguration.setTransactionProvider(new DefaultTransactionProvider(connectionProvider));
         jooqConfiguration.set(SQLDialect.H2);
         return new DefaultDSLContext(jooqConfiguration);
     }

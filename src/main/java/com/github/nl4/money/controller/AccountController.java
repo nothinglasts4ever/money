@@ -7,8 +7,6 @@ import com.google.inject.Inject;
 import spark.Request;
 import spark.Response;
 
-import java.util.List;
-
 public class AccountController {
 
     private static final String JSON = "application/json";
@@ -20,21 +18,30 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    /**
+     * Endpoint that creates new account.
+     * It will be inactive and have no fund by default if no info provided in request.
+     */
     public String create(Request request, Response response) {
         response.type(JSON);
-        Account account = new Gson().fromJson(request.body(), Account.class);
-        if (account.getUserName() == null || account.getBalance() == null) {
+        var account = new Gson().fromJson(request.body(), Account.class);
+        var userName = account.getUserName();
+        if (userName == null) {
             response.status(400);
-            return new Gson().toJson("Account has no user name and/or balance information");
+            return new Gson().toJson("Account should have user name ");
         }
+        accountService.create(account);
         response.status(201);
-        return new Gson().toJson(accountService.create(account));
+        return new Gson().toJson("Account for " + userName + " was created");
     }
 
+    /**
+     * Endpoint that returns account by id.
+     */
     public String get(Request request, Response response) {
         response.type(JSON);
-        String id = request.params(":id");
-        Account account = accountService.findById(Integer.parseInt(id));
+        var id = request.params(":id");
+        var account = accountService.findById(Integer.parseInt(id));
         if (account == null) {
             response.status(404);
             return new Gson().toJson("Account with id [" + id + "] not found");
@@ -42,24 +49,35 @@ public class AccountController {
         return new Gson().toJson(account);
     }
 
+    /**
+     * Endpoint that returns all accounts.
+     */
     public String getAll(Request request, Response response) {
         response.type(JSON);
-        List<Account> all = accountService.findAll();
-        return new Gson().toJson(all);
+        var accounts = accountService.findAll();
+        return new Gson().toJson(accounts);
     }
 
+    /**
+     * Endpoint that activates account specified by id.
+     */
     public String activate(Request request, Response response) {
         response.type(JSON);
-        String id = request.params(":id");
+        var id = request.params(":id");
+        accountService.activate(Integer.parseInt(id));
         response.status(200);
-        return new Gson().toJson(accountService.activate(id));
+        return new Gson().toJson("Account [" + id + "] was activated");
     }
 
+    /**
+     * Endpoint that deactivates account specified by id.
+     */
     public String deactivate(Request request, Response response) {
         response.type(JSON);
-        String id = request.params(":id");
+        var id = request.params(":id");
+        accountService.deactivate(Integer.parseInt(id));
         response.status(200);
-        return new Gson().toJson(accountService.deactivate(id));
+        return new Gson().toJson("Account [" + id + "] was deactivated");
     }
 
 }

@@ -3,21 +3,32 @@ package com.github.nl4.money.service;
 import com.github.nl4.money.api.Account;
 import com.google.inject.Inject;
 import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.github.nl4.money.domain.tables.Account.ACCOUNT;
 
 public class AccountService {
 
-    @Inject
-    DSLContext dsl;
+    private final DSLContext dsl;
 
-    public Account create(Account account) {
-        return dsl.insertInto(ACCOUNT, ACCOUNT.USER_NAME, ACCOUNT.ACTIVE, ACCOUNT.BALANCE)
-                .values(account.getUserName(), account.getActive(), account.getBalance())
-                .returning()
-                .fetchOne().into(Account.class);
+    @Inject
+    public AccountService(DSLContext dsl) {
+        this.dsl = dsl;
+    }
+
+    public void create(Account account) {
+        boolean active = account.getActive() != null ? account.getActive() : false;
+        BigDecimal balance = account.getBalance() != null ? account.getBalance() : BigDecimal.ZERO;
+        dsl.transaction(ctx ->
+                DSL.using(ctx)
+                        .insertInto(ACCOUNT, ACCOUNT.USER_NAME, ACCOUNT.ACTIVE, ACCOUNT.BALANCE)
+                        .values(account.getUserName(), active, balance)
+                        .returning()
+                        .fetchOne().into(Account.class)
+        );
     }
 
     public Account findById(Integer id) {
@@ -33,12 +44,24 @@ public class AccountService {
                 .fetchInto(Account.class);
     }
 
-    public Account activate(String id) {
-        return null;
+    public void activate(Integer id) {
+        dsl.transaction(ctx ->
+                DSL.using(ctx)
+                        .update(ACCOUNT)
+                        .set(ACCOUNT.ACTIVE, true)
+                        .where(ACCOUNT.ID.eq(id))
+                        .execute()
+        );
     }
 
-    public Account deactivate(String id) {
-        return null;
+    public void deactivate(Integer id) {
+        dsl.transaction(ctx ->
+                DSL.using(ctx)
+                        .update(ACCOUNT)
+                        .set(ACCOUNT.ACTIVE, false)
+                        .where(ACCOUNT.ID.eq(id))
+                        .execute()
+        );
     }
 
 }

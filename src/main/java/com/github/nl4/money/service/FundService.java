@@ -1,6 +1,5 @@
 package com.github.nl4.money.service;
 
-import com.github.nl4.money.api.Account;
 import com.google.inject.Inject;
 import org.jooq.DSLContext;
 
@@ -8,15 +7,17 @@ import java.math.BigDecimal;
 
 public class FundService {
 
-    @Inject
-    DSLContext dsl;
+    private final DSLContext dsl;
 
-    public Account deposit(String id, BigDecimal balance) {
-        return null;
+    @Inject
+    public FundService(DSLContext dsl) {
+        this.dsl = dsl;
     }
 
-    public Account withdraw(String id, BigDecimal balance) {
-        return null;
+    public void deposit(Integer id, BigDecimal balance) {
+    }
+
+    public void withdraw(Integer id, BigDecimal balance) {
     }
 
     public String transfer(Integer accountFromId, Integer accountToId, BigDecimal amount) {
