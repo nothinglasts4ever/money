@@ -2,7 +2,7 @@ package com.github.nl4.money;
 
 import com.github.nl4.money.config.GuiceModule;
 import com.github.nl4.money.controller.AccountController;
-import com.github.nl4.money.controller.FundController;
+import com.github.nl4.money.controller.FundsController;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import spark.Spark;
@@ -30,10 +30,10 @@ public class MoneyTransferApp {
         Spark.put("/accounts/:id/activate", accountController::activate);
         Spark.put("/accounts/:id/deactivate", accountController::deactivate);
 
-        var fundController = injector.getInstance(FundController.class);
-        Spark.put("/accounts/:id/deposit", JSON, fundController::deposit);
-        Spark.put("/accounts/:id/withdraw", JSON, fundController::withdraw);
-        Spark.post("/transfer", JSON, fundController::transfer);
+        var fundsController = injector.getInstance(FundsController.class);
+        Spark.put("/accounts/:id/deposit", JSON, fundsController::deposit);
+        Spark.put("/accounts/:id/withdraw", JSON, fundsController::withdraw);
+        Spark.post("/transfer", JSON, fundsController::transfer);
     }
 
     public static void main(String[] args) {

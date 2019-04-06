@@ -26,15 +26,14 @@ class RequestSpecificationTemplate {
                 .post(SERVER_URL + url)
     }
 
-    static Response processPostRequest(String url, def requestBody, Map<String, Object> parameters) {
-        prepareRequestSpecification()
-                .body(requestBody)
-                .queryParameters(parameters)
-                .post(SERVER_URL + url)
-    }
-
     static Response processPutRequest(String url) {
         prepareRequestSpecification()
+                .put(SERVER_URL + url)
+    }
+
+    static Response processPutRequest(String url, def requestBody) {
+        prepareRequestSpecification()
+                .body(requestBody)
                 .put(SERVER_URL + url)
     }
 

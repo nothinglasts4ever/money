@@ -1,7 +1,7 @@
 package com.github.nl4.money.config;
 
 import com.github.nl4.money.controller.AccountController;
-import com.github.nl4.money.controller.FundController;
+import com.github.nl4.money.controller.FundsController;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -21,7 +21,7 @@ public class GuiceModule extends AbstractModule {
         install(new ConfigurationModule());
         requestInjection(Properties.class);
         bind(AccountController.class).in(Singleton.class);
-        bind(FundController.class).in(Singleton.class);
+        bind(FundsController.class).in(Singleton.class);
     }
 
     @Provides

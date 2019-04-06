@@ -4,11 +4,8 @@ import com.github.nl4.money.api.Account
 import com.github.nl4.money.helper.Scenarios
 import spock.lang.Specification
 
-import static com.github.nl4.money.helper.RequestSpecificationTemplate.processGetRequest
-import static com.github.nl4.money.helper.RequestSpecificationTemplate.processPostRequest
-import static com.github.nl4.money.helper.RequestSpecificationTemplate.processPutRequest
-import static org.apache.http.HttpStatus.SC_CREATED
-import static org.apache.http.HttpStatus.SC_OK
+import static com.github.nl4.money.helper.RequestSpecificationTemplate.*
+import static org.apache.http.HttpStatus.*
 
 class AccountAPI extends Specification {
 
@@ -56,7 +53,7 @@ class AccountAPI extends Specification {
 
     def "Get account - basic positive test"() {
         given:
-            def account = Scenarios.createAccountAndGet(ACCOUNTS_ENDPOINT, name, new BigDecimal(1000), true)
+            def account = Scenarios.createActiveAccountWithFundsAndGet(ACCOUNTS_ENDPOINT, name)
         when:
             def response = processGetRequest(ACCOUNTS_ENDPOINT + "/" + account.id)
         then:
@@ -83,7 +80,7 @@ class AccountAPI extends Specification {
 
     def "Deactivate account - basic positive test"() {
         given:
-            def account = Scenarios.createAccountAndGet(ACCOUNTS_ENDPOINT, name, new BigDecimal(1000), true)
+            def account = Scenarios.createActiveAccountWithFundsAndGet(ACCOUNTS_ENDPOINT, name)
         when:
             def response = processPutRequest(ACCOUNTS_ENDPOINT + "/" + account.id + "/deactivate")
         then:

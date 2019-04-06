@@ -20,8 +20,8 @@ class Scenarios {
         account
     }
 
-    static Account createAccountAndGet(def endpoint, def name) {
-        createAccountAndGet(endpoint, name, new BigDecimal(100), true)
+    static Account createActiveAccountWithFundsAndGet(def endpoint, def name) {
+        createAccountAndGet(endpoint, name, new BigDecimal(1000), true)
     }
 
 }

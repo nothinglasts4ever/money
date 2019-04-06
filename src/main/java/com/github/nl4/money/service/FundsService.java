@@ -9,12 +9,12 @@ import java.math.BigDecimal;
 
 import static com.github.nl4.money.domain.tables.Account.ACCOUNT;
 
-public class FundService {
+public class FundsService {
 
     private final DSLContext dsl;
 
     @Inject
-    public FundService(DSLContext dsl) {
+    public FundsService(DSLContext dsl) {
         this.dsl = dsl;
     }
 
