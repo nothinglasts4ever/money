@@ -33,9 +33,9 @@ public class FundsController {
             response.status(400);
             return new Gson().toJson("Balance update request does not contain amount information");
         }
-        if (balanceUpdateRequest.getAmount() != null && balanceUpdateRequest.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+        if (balanceUpdateRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             response.status(400);
-            return new Gson().toJson("Balance update request cannot have negative amount");
+            return new Gson().toJson("Balance update request cannot have negative or zero amount");
         }
         fundsService.deposit(Integer.parseInt(id), balanceUpdateRequest.getAmount());
         response.status(200);
@@ -53,9 +53,9 @@ public class FundsController {
             response.status(400);
             return new Gson().toJson("Balance update request does not contain amount information");
         }
-        if (balanceUpdateRequest.getAmount() != null && balanceUpdateRequest.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+        if ( balanceUpdateRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             response.status(400);
-            return new Gson().toJson("Balance update request cannot have negative amount");
+            return new Gson().toJson("Balance update request cannot have negative or zero amount");
         }
         fundsService.withdraw(Integer.parseInt(id), balanceUpdateRequest.getAmount());
         response.status(200);
@@ -72,9 +72,9 @@ public class FundsController {
             response.status(400);
             return new Gson().toJson("Funds transfer request does not contain required information");
         }
-        if (transferRequest.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+        if (transferRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             response.status(400);
-            return new Gson().toJson("Funds transfer request cannot have negative amount");
+            return new Gson().toJson("Funds transfer request cannot have negative or zero amount");
         }
         var accountFromId = transferRequest.getAccountFromId();
         var accountToId = transferRequest.getAccountToId();

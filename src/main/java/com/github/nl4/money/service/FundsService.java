@@ -18,7 +18,7 @@ public class FundsService {
         this.dsl = dsl;
     }
 
-    public void deposit(Integer id, BigDecimal balance) {
+    public void deposit(Integer id, BigDecimal amount) {
         dsl.transaction(ctx -> {
             var account = DSL.using(ctx)
                     .select()
@@ -29,14 +29,14 @@ public class FundsService {
             if (account != null) {
                 DSL.using(ctx)
                         .update(ACCOUNT)
-                        .set(ACCOUNT.BALANCE, account.getBalance().add(balance))
+                        .set(ACCOUNT.BALANCE, account.getBalance().add(amount))
                         .where(ACCOUNT.ID.eq(id))
                         .execute();
             }
         });
     }
 
-    public void withdraw(Integer id, BigDecimal balance) {
+    public void withdraw(Integer id, BigDecimal amount) {
         dsl.transaction(ctx -> {
             var account = DSL.using(ctx)
                     .select()
@@ -44,10 +44,10 @@ public class FundsService {
                     .where(ACCOUNT.ID.eq(id)
                             .and(ACCOUNT.ACTIVE.eq(true)))
                     .fetchOneInto(Account.class);
-            if (account != null && account.getBalance().compareTo(balance) > 0) {
+            if (account != null && account.getBalance().compareTo(amount) >= 0) {
                 DSL.using(ctx)
                         .update(ACCOUNT)
-                        .set(ACCOUNT.BALANCE, account.getBalance().subtract(balance))
+                        .set(ACCOUNT.BALANCE, account.getBalance().subtract(amount))
                         .where(ACCOUNT.ID.eq(id))
                         .execute();
             }

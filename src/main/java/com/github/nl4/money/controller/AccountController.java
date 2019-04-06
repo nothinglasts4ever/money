@@ -83,7 +83,7 @@ public class AccountController {
         var id = request.params(":id");
         accountService.deactivate(Integer.parseInt(id));
         response.status(200);
-        return new Gson().toJson("Account activation request for [" + id + "] accepted for processing");
+        return new Gson().toJson("Account deactivation request for [" + id + "] accepted for processing");
     }
 
 }
