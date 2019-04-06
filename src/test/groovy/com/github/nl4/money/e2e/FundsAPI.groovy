@@ -61,16 +61,6 @@ class FundsAPI extends Specification {
             response.body.as(Account).balance == 1000
     }
 
-    def "No error should be returned when trying to add funds to non-existing account"() {
-        given:
-            def id = Integer.MAX_VALUE
-            def request = new BalanceUpdateRequest(new BigDecimal(100))
-        when:
-            def response = processPutRequest(ACCOUNTS_ENDPOINT + "/" + id + "/deposit", request)
-        then:
-            response.statusCode == SC_OK
-    }
-
     def "Funds should be subtracted from the balance when valid request sent"() {
         given:
             def account = Scenarios.createActiveAccountWithFundsAndGet(ACCOUNTS_ENDPOINT, name)
@@ -136,14 +126,38 @@ class FundsAPI extends Specification {
             response.body.as(Account).balance == 1000
     }
 
-    def "No error should be returned when trying to subtract funds from non-existing account"() {
+    def "404 error should be returned when trying to add or subtract funds from non-existing account"() {
         given:
             def id = Integer.MAX_VALUE
             def request = new BalanceUpdateRequest(new BigDecimal(100))
         when:
-            def response = processPutRequest(ACCOUNTS_ENDPOINT + "/" + id + "/withdraw", request)
+            def response = processPutRequest(ACCOUNTS_ENDPOINT + "/" + id + "/deposit", request)
+        then:
+            response.statusCode == SC_NOT_FOUND
+        when:
+            response = processPutRequest(ACCOUNTS_ENDPOINT + "/" + id + "/withdraw", request)
+        then:
+            response.statusCode == SC_NOT_FOUND
+    }
+
+    def "404 error should be returned when trying to add or subtract funds from inactive account"() {
+        given:
+            def account = Scenarios.createAccountAndGet(ACCOUNTS_ENDPOINT, name, new BigDecimal(1000), false)
+        when:
+            def request = new BalanceUpdateRequest(new BigDecimal(100))
+            def response = processPutRequest(ACCOUNTS_ENDPOINT + "/" + account.id + "/deposit", request)
+        then:
+            response.statusCode == SC_NOT_FOUND
+        when:
+            request = new BalanceUpdateRequest(new BigDecimal(200))
+            response = processPutRequest(ACCOUNTS_ENDPOINT + "/" + account.id + "/withdraw", request)
+        then:
+            response.statusCode == SC_NOT_FOUND
+        when:
+            response = processGetRequest(ACCOUNTS_ENDPOINT + "/" + account.id)
         then:
             response.statusCode == SC_OK
+            response.body.as(Account).balance == 1000
     }
 
     def "Funds should be transferred from one account to another when valid request sent"() {
@@ -169,6 +183,25 @@ class FundsAPI extends Specification {
         then:
             response.statusCode == SC_OK
             response.body.as(Account).balance == 1100
+        when:
+            request = TransferRequest.builder()
+                    .accountFromId(accountFrom.id)
+                    .accountToId(accountTo.id)
+                    .amount(new BigDecimal(900))
+                    .build()
+            response = processPostRequest(TRANSFER_ENDPOINT, request)
+        then:
+            response.statusCode == SC_CREATED
+        when:
+            response = processGetRequest(ACCOUNTS_ENDPOINT + "/" + accountFrom.id)
+        then:
+            response.statusCode == SC_OK
+            response.body.as(Account).balance == BigDecimal.ZERO
+        when:
+            response = processGetRequest(ACCOUNTS_ENDPOINT + "/" + accountTo.id)
+        then:
+            response.statusCode == SC_OK
+            response.body.as(Account).balance == 2000
     }
 
     def "Funds should not be transferred when originator does not have enough funds"() {
@@ -240,7 +273,7 @@ class FundsAPI extends Specification {
             response.statusCode == SC_BAD_REQUEST
     }
 
-    def "No error should be returned when trying to transfer funds from/to non-existing account"() {
+    def "404 error should be returned when trying to transfer funds from/to non-existing account"() {
         given:
             def accountFromId = Integer.MAX_VALUE
             def accountToId = Integer.MAX_VALUE - 1
@@ -252,7 +285,22 @@ class FundsAPI extends Specification {
         when:
             def response = processPostRequest(TRANSFER_ENDPOINT, request)
         then:
-            response.statusCode == SC_CREATED
+            response.statusCode == SC_NOT_FOUND
+    }
+
+    def "404 error should be returned when trying to transfer funds from/to inactive account"() {
+        given:
+            def accountFrom = Scenarios.createActiveAccountWithFundsAndGet(ACCOUNTS_ENDPOINT, name)
+            def accountTo = Scenarios.createAccountAndGet(ACCOUNTS_ENDPOINT, name2, new BigDecimal(1000), false)
+            def request = TransferRequest.builder()
+                    .accountFromId(accountFrom.id)
+                    .accountToId(accountTo.id)
+                    .amount(new BigDecimal(100))
+                    .build()
+        when:
+            def response = processPostRequest(TRANSFER_ENDPOINT, request)
+        then:
+            response.statusCode == SC_NOT_FOUND
     }
 
 }

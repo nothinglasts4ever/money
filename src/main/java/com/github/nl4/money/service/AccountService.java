@@ -38,6 +38,14 @@ public class AccountService {
                 .fetchOneInto(Account.class);
     }
 
+    public Account findActiveById(Integer id) {
+        return dsl.select()
+                .from(ACCOUNT)
+                .where(ACCOUNT.ID.eq(id)
+                        .and(ACCOUNT.ACTIVE.eq(true)))
+                .fetchOneInto(Account.class);
+    }
+
     public List<Account> findAll() {
         return dsl.select()
                 .from(ACCOUNT)

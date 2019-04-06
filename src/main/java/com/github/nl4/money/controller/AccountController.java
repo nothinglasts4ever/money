@@ -70,6 +70,11 @@ public class AccountController {
     public String activate(Request request, Response response) {
         response.type(JSON);
         var id = request.params(":id");
+        var account = accountService.findById(Integer.parseInt(id));
+        if (account == null) {
+            response.status(404);
+            return new Gson().toJson("Account [" + id + "] not found");
+        }
         accountService.activate(Integer.parseInt(id));
         response.status(200);
         return new Gson().toJson("Account activation request for [" + id + "] accepted for processing");
@@ -81,6 +86,11 @@ public class AccountController {
     public String deactivate(Request request, Response response) {
         response.type(JSON);
         var id = request.params(":id");
+        var account = accountService.findById(Integer.parseInt(id));
+        if (account == null) {
+            response.status(404);
+            return new Gson().toJson("Account [" + id + "] not found");
+        }
         accountService.deactivate(Integer.parseInt(id));
         response.status(200);
         return new Gson().toJson("Account deactivation request for [" + id + "] accepted for processing");

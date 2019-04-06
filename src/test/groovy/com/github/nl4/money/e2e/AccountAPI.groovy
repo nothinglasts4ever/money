@@ -166,17 +166,17 @@ class AccountAPI extends Specification {
             !response.body.as(Account).active
     }
 
-    def "No error should be returned when trying to activate and deactivate non-existing account"() {
+    def "404 error should be returned when trying to activate and deactivate non-existing account"() {
         given:
             def id = Integer.MAX_VALUE
         when:
             def response = processPutRequest(ACCOUNTS_ENDPOINT + "/" + id + "/activate")
         then:
-            response.statusCode == SC_OK
+            response.statusCode == SC_NOT_FOUND
         when:
             response = processPutRequest(ACCOUNTS_ENDPOINT + "/" + id + "/deactivate")
         then:
-            response.statusCode == SC_OK
+            response.statusCode == SC_NOT_FOUND
     }
 
 }

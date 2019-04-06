@@ -2,6 +2,7 @@ package com.github.nl4.money.controller;
 
 import com.github.nl4.money.api.BalanceUpdateRequest;
 import com.github.nl4.money.api.TransferRequest;
+import com.github.nl4.money.service.AccountService;
 import com.github.nl4.money.service.FundsService;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
@@ -15,10 +16,12 @@ public class FundsController {
 
     private static final String JSON = "application/json";
 
+    private final AccountService accountService;
     private final FundsService fundsService;
 
     @Inject
-    public FundsController(FundsService fundsService) {
+    public FundsController(AccountService accountService, FundsService fundsService) {
+        this.accountService = accountService;
         this.fundsService = fundsService;
     }
 
@@ -37,6 +40,11 @@ public class FundsController {
             response.status(400);
             return new Gson().toJson("Balance update request cannot have negative or zero amount");
         }
+        var account = accountService.findActiveById(Integer.parseInt(id));
+        if (account == null) {
+            response.status(404);
+            return new Gson().toJson("No active account with id [" + id + "] found");
+        }
         fundsService.deposit(Integer.parseInt(id), balanceUpdateRequest.getAmount());
         response.status(200);
         return new Gson().toJson("Balance update request for account [" + id + "] accepted for processing");
@@ -53,9 +61,14 @@ public class FundsController {
             response.status(400);
             return new Gson().toJson("Balance update request does not contain amount information");
         }
-        if ( balanceUpdateRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+        if (balanceUpdateRequest.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             response.status(400);
             return new Gson().toJson("Balance update request cannot have negative or zero amount");
+        }
+        var account = accountService.findActiveById(Integer.parseInt(id));
+        if (account == null) {
+            response.status(404);
+            return new Gson().toJson("No active account with id [" + id + "] found");
         }
         fundsService.withdraw(Integer.parseInt(id), balanceUpdateRequest.getAmount());
         response.status(200);
@@ -81,6 +94,12 @@ public class FundsController {
         if (Objects.equals(accountFromId, accountToId)) {
             response.status(400);
             return new Gson().toJson("Funds cannot be transferred to originator");
+        }
+        var accountFrom = accountService.findActiveById(accountFromId);
+        var accountTo = accountService.findActiveById(accountToId);
+        if (accountFrom == null || accountTo == null) {
+            response.status(404);
+            return new Gson().toJson("No active accounts with id [" + accountFrom + "] and/or [" + accountTo + "] found");
         }
         fundsService.transfer(accountFromId, accountToId, transferRequest.getAmount());
         response.status(201);

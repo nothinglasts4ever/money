@@ -68,7 +68,7 @@ public class FundsService {
                     .where(ACCOUNT.ID.eq(accountToId)
                             .and(ACCOUNT.ACTIVE.eq(true)))
                     .fetchOneInto(Account.class);
-            if (from != null && to != null && from.getBalance().compareTo(amount) > 0) {
+            if (from != null && to != null && from.getBalance().compareTo(amount) >= 0) {
                 DSL.using(ctx)
                         .update(ACCOUNT)
                         .set(ACCOUNT.BALANCE, from.getBalance().subtract(amount))
