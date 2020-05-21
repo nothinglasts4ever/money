@@ -30,6 +30,7 @@ public class GuiceModule extends AbstractModule {
         var dataSource = new JdbcDataSource();
         dataSource.setUrl("jdbc:h2:mem:default;DB_CLOSE_DELAY=-1");
         dataSource.setUser("sa");
+        // todo: set SERIALIZABLE isolation level
         var connectionProvider = new DataSourceConnectionProvider(dataSource);
 
         var jooqConfiguration = new DefaultConfiguration();

@@ -25,7 +25,6 @@ public class FundsService {
                     .from(ACCOUNT)
                     .where(ACCOUNT.ID.eq(id)
                             .and(ACCOUNT.ACTIVE.eq(true)))
-                    .forUpdate()
                     .fetchOneInto(Account.class);
             if (account != null) {
                 DSL.using(ctx)
@@ -44,7 +43,6 @@ public class FundsService {
                     .from(ACCOUNT)
                     .where(ACCOUNT.ID.eq(id)
                             .and(ACCOUNT.ACTIVE.eq(true)))
-                    .forUpdate()
                     .fetchOneInto(Account.class);
             if (account != null && account.getBalance().compareTo(amount) >= 0) {
                 DSL.using(ctx)
@@ -63,14 +61,12 @@ public class FundsService {
                     .from(ACCOUNT)
                     .where(ACCOUNT.ID.eq(accountFromId)
                             .and(ACCOUNT.ACTIVE.eq(true)))
-                    .forUpdate()
                     .fetchOneInto(Account.class);
             var to = DSL.using(ctx)
                     .select()
                     .from(ACCOUNT)
                     .where(ACCOUNT.ID.eq(accountToId)
                             .and(ACCOUNT.ACTIVE.eq(true)))
-                    .forUpdate()
                     .fetchOneInto(Account.class);
             if (from != null && to != null && from.getBalance().compareTo(amount) >= 0) {
                 DSL.using(ctx)

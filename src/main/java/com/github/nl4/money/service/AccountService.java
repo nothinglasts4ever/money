@@ -59,7 +59,6 @@ public class AccountService {
                     .from(ACCOUNT)
                     .where(ACCOUNT.ID.eq(id)
                             .and(ACCOUNT.ACTIVE.eq(false)))
-                    .forUpdate()
                     .fetchOneInto(Account.class);
             if (account != null) {
                 DSL.using(ctx)
@@ -78,7 +77,6 @@ public class AccountService {
                     .from(ACCOUNT)
                     .where(ACCOUNT.ID.eq(id)
                             .and(ACCOUNT.ACTIVE.eq(true)))
-                    .forUpdate()
                     .fetchOneInto(Account.class);
             if (account != null) {
                 DSL.using(ctx)
